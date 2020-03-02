@@ -44,7 +44,6 @@ ATheFarm51TestCharacter::ATheFarm51TestCharacter(const FObjectInitializer& Objec
 	FP_Gun->SetOnlyOwnerSee(true);
 	FP_Gun->bCastDynamicShadow = false;
 	FP_Gun->CastShadow = false;
-	// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
 	FP_Gun->SetupAttachment(RootComponent);
 	FP_Gun->SetIsReplicated(true);
 
@@ -54,7 +53,6 @@ ATheFarm51TestCharacter::ATheFarm51TestCharacter(const FObjectInitializer& Objec
 	TP_Gun->bCastDynamicShadow = false;
 	TP_Gun->CastShadow = false;
 	TP_Gun->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
-	//TP_Gun->SetupAttachment(GetMesh());
 	TP_Gun->SetIsReplicated(true);
 
 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
@@ -80,16 +78,6 @@ void ATheFarm51TestCharacter::BeginPlay()
 	if (!HasAuthority())
 	{
 		FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-		
-		//if (InfoWidget)
-		//{
-		//	InfoWidget->AddToViewport();
-
-		//	if (CurrentItem)
-		//		InfoWidget->GetWidgetFromName("PickUpText")->SetVisibility(ESlateVisibility::Visible);
-		//	else
-		//		InfoWidget->GetWidgetFromName("PickUpText")->SetVisibility(ESlateVisibility::Hidden);
-		//}
 
 		if (GetController()->CastToPlayerController())
 		{
@@ -160,12 +148,6 @@ void ATheFarm51TestCharacter::ClientFire_Implementation()
 			ServerOnFire(this);
 		}
 
-		/*UE_LOG(LogTemp, Warning, TEXT("TEST 1"));
-		if (FireSound != NULL)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("TEST 2"));
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetActorLocation());
-		}*/
 		if (FireAnimation != NULL)
 		{
 			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
@@ -262,14 +244,13 @@ void ATheFarm51TestCharacter::ClientInteractCheck_Implementation()
 				if (Hit.GetActor()->GetClass()->IsChildOf(AInteractable::StaticClass()))
 				{
 					auto Other = Cast<AInteractable>(Hit.GetActor());
-					if (/*InfoWidget &&*/ Other)
+					if (Other)
 					{
 						Cast<ATheFarm51TestHUD>(GetController()->CastToPlayerController()->GetHUD())->UpdateTextVisibility(true);
 
-//						InfoWidget->GetWidgetFromName("PickUpText")->SetVisibility(ESlateVisibility::Visible);
 						FString Text;
 						Text.Append("Pick up "); Text.Append(Other->GetObjectName());
-//						Cast<UTextBlock>(InfoWidget->GetWidgetFromName("PickUpText"))->SetText(FText::FromString(text));
+
 						Cast<ATheFarm51TestHUD>(GetController()->CastToPlayerController()->GetHUD())->UpdateText(Text);
 					}
 
@@ -279,12 +260,7 @@ void ATheFarm51TestCharacter::ClientInteractCheck_Implementation()
 		}
 		else
 		{
-//			if (InfoWidget)
-//			{
-//				InfoWidget->GetWidgetFromName("PickUpText")->SetVisibility(ESlateVisibility::Hidden);
 			Cast<ATheFarm51TestHUD>(GetController()->CastToPlayerController()->GetHUD())->UpdateTextVisibility(false);
-//			}
-
 			CurrentItem = NULL;
 		}
 	}
@@ -338,17 +314,9 @@ void ATheFarm51TestCharacter::ServerEquipItem_Implementation(AActor* OtherActor,
 
 						Character->GetEquippedItem()->Destroy();
 						Character->EquippedItem = NULL;
-						Character->ClientSendMessage("Dropped");
 					}
 
 					Character->ClientEquipItem(Item);
-					Character->ClientSendMessage("Picked");
-//					Character->CurrentItem = NULL;
-
-//					Cast<ATheFarm51TestHUD>(Character->GetController()->CastToPlayerController()->GetHUD())->UpdateImage(Character->EquippedItem->Image);
-//					Cast<ATheFarm51TestHUD>(Character->GetController()->CastToPlayerController()->GetHUD())->UpdateImageVisibility(true);
-
-//					Character->ClientEquipItem(Item);
 
 					if (Item)
 						Item->Destroy();
@@ -367,7 +335,6 @@ bool ATheFarm51TestCharacter::ServerEquipItem_Validate(AActor* OtherActor, AInte
 
 void ATheFarm51TestCharacter::ClientEquipItem_Implementation(AInteractable* Item)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ABC"));
 	if (IsLocallyControlled() && Item)
 	{
 		ServerSetEquippedItem(this, Item);

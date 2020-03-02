@@ -41,9 +41,9 @@ void ADestructable::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ServerSetStage(InitialStage);
-	ServerSetHP(InitialHP);
-	ServerSetMesh(Stages[CurrentStage].Mesh);
+	NetMultiSetStage(InitialStage);
+	NetMultiSetHP(InitialHP);
+	NetMultiSetMesh(Stages[CurrentStage].Mesh);
 }
 
 // Called every frame
@@ -58,17 +58,14 @@ void ADestructable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ADestructable, CurrentHP);
 	DOREPLIFETIME(ADestructable, CurrentStage);
-	/*DOREPLIFETIME(ADestructable, DestroyedParticle);
-	DOREPLIFETIME(ADestructable, DestroyedSound);
-	DOREPLIFETIME(ADestructable, Stages);*/
 }
 
-void ADestructable::ServerSetHP_Implementation(int32 HP)
+void ADestructable::NetMultiSetHP_Implementation(int32 HP)
 {
 	CurrentHP = HP;
 }
 
-bool ADestructable::ServerSetHP_Validate(int32 HP)
+bool ADestructable::NetMultiSetHP_Validate(int32 HP)
 {
 	return true;
 }
@@ -88,32 +85,32 @@ USoundBase* ADestructable::GetDestroyedSound()
 	return DestroyedSound;
 }
 
-void ADestructable::ServerSetMesh_Implementation(UStaticMesh* NewMesh)
+void ADestructable::NetMultiSetMesh_Implementation(UStaticMesh* NewMesh)
 {
 	if (NewMesh)
 		Mesh->SetStaticMesh(NewMesh);
 }
 
-bool ADestructable::ServerSetMesh_Validate(UStaticMesh* NewMesh)
+bool ADestructable::NetMultiSetMesh_Validate(UStaticMesh* NewMesh)
 {
 	if (NewMesh)
 		return true;
 	return false;
 }
 
-void ADestructable::ServerSetStage_Implementation(int32 Stage)
+void ADestructable::NetMultiSetStage_Implementation(int32 Stage)
 {
 	CurrentStage = Stage;
 }
 
-bool ADestructable::ServerSetStage_Validate(int32 Stage)
+bool ADestructable::NetMultiSetStage_Validate(int32 Stage)
 {
 	if (Stage >= 0 && Stage < Stages.Num())
 		return true;
 	return false;
 }
 
-void ADestructable::ServerChangeStageUp_Implementation()
+void ADestructable::ClientChangeStageUp_Implementation()
 {
 	if (Stages.IsValidIndex(CurrentStage) && CurrentStage < Stages.Num())
 	{
@@ -122,14 +119,14 @@ void ADestructable::ServerChangeStageUp_Implementation()
 	}
 }
 
-bool ADestructable::ServerChangeStageUp_Validate()
+bool ADestructable::ClientChangeStageUp_Validate()
 {
 	if (Stages.Num() > 0)
 		return true;
 	return false;
 }
 
-void ADestructable::ServerChangeStageDown_Implementation()
+void ADestructable::ClientChangeStageDown_Implementation()
 {
 	if (Stages.IsValidIndex(CurrentStage) && CurrentStage >= 0)
 	{
@@ -138,7 +135,7 @@ void ADestructable::ServerChangeStageDown_Implementation()
 	}
 }
 
-bool ADestructable::ServerChangeStageDown_Validate()
+bool ADestructable::ClientChangeStageDown_Validate()
 {
 	if (Stages.Num() > 0)
 		return true;
@@ -151,7 +148,7 @@ float ADestructable::TakeDamage(float Damage, FDamageEvent const& DamageEvent, A
 	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	if (ActualDamage > 0.f)
 	{
-		ServerSetHP(GetHP() - 1);
+		NetMultiSetHP(GetHP() - 1);
 
 		if (CurrentHP <= 0)
 		{
@@ -171,7 +168,7 @@ float ADestructable::TakeDamage(float Damage, FDamageEvent const& DamageEvent, A
 			{
 				if (CurrentStage > 0 && CurrentHP <= Stages[CurrentStage].HP)
 				{
-					ServerChangeStageDown();
+					ClientChangeStageDown();
 
 					if (Stages[CurrentStage].Particle)
 					{
@@ -189,7 +186,7 @@ float ADestructable::TakeDamage(float Damage, FDamageEvent const& DamageEvent, A
 			{
 				if (CurrentStage < Stages.Num() - 1 && CurrentHP <= Stages[CurrentStage].HP)
 				{
-					ServerChangeStageUp();
+					ClientChangeStageUp();
 
 					if (Stages[CurrentStage].Particle)
 					{

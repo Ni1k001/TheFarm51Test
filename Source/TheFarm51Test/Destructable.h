@@ -54,7 +54,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(EditAnywhere/*, Replicated*/)
+	UPROPERTY(EditAnywhere)
 		TArray<FDestStage> Stages;
 
 	UPROPERTY(EditAnywhere)
@@ -69,17 +69,17 @@ private:
 	UPROPERTY(Replicated)
 		int32 CurrentHP;
 
-	UPROPERTY(EditAnywhere/*, Replicated*/)
+	UPROPERTY(EditAnywhere)
 		UParticleSystem* DestroyedParticle;
 
-	UPROPERTY(EditAnywhere/*, Replicated*/)
+	UPROPERTY(EditAnywhere)
 		USoundBase* DestroyedSound;
 
 public:
 	UFUNCTION(Reliable, NetMulticast, WithValidation)
-		void ServerSetHP(int32 HP);
-	void ServerSetHP_Implementation(int32 HP);
-	bool ServerSetHP_Validate(int32 HP);
+		void NetMultiSetHP(int32 HP);
+	void NetMultiSetHP_Implementation(int32 HP);
+	bool NetMultiSetHP_Validate(int32 HP);
 
 	int32 GetHP();
 
@@ -87,24 +87,24 @@ public:
 	USoundBase* GetDestroyedSound();
 
 	UFUNCTION(Reliable, NetMulticast, WithValidation)
-		void ServerSetMesh(UStaticMesh* NewMesh);
-	void ServerSetMesh_Implementation(UStaticMesh* NewMesh);
-	bool ServerSetMesh_Validate(UStaticMesh* NewMesh);
+		void NetMultiSetMesh(UStaticMesh* NewMesh);
+	void NetMultiSetMesh_Implementation(UStaticMesh* NewMesh);
+	bool NetMultiSetMesh_Validate(UStaticMesh* NewMesh);
 
 	UFUNCTION(Reliable, NetMulticast, WithValidation)
-		void ServerSetStage(int32 Stage);
-	void ServerSetStage_Implementation(int32 Stage);
-	bool ServerSetStage_Validate(int32 Stage);
+		void NetMultiSetStage(int32 Stage);
+	void NetMultiSetStage_Implementation(int32 Stage);
+	bool NetMultiSetStage_Validate(int32 Stage);
 
 	UFUNCTION(Reliable, Client, WithValidation)
-		void ServerChangeStageUp();
-	void ServerChangeStageUp_Implementation();
-	bool ServerChangeStageUp_Validate();
+		void ClientChangeStageUp();
+	void ClientChangeStageUp_Implementation();
+	bool ClientChangeStageUp_Validate();
 
 	UFUNCTION(Reliable, Client, WithValidation)
-		void ServerChangeStageDown();
-	void ServerChangeStageDown_Implementation();
-	bool ServerChangeStageDown_Validate();
+		void ClientChangeStageDown();
+	void ClientChangeStageDown_Implementation();
+	bool ClientChangeStageDown_Validate();
 
 protected:
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

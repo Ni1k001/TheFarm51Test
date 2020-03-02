@@ -8,7 +8,6 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
 #include "TheFarm51TestCharacter.h"
-//#include "Interactable.h"
 #include "TextBlock.h"
 #include "Image.h"
 
@@ -57,7 +56,6 @@ void ATheFarm51TestHUD::UpdateText(FString text)
 {
 	if (GetOwningPlayerController()->IsLocalPlayerController())
 	{
-		//		ATheFarm51TestCharacter* Player = Cast<ATheFarm51TestCharacter>(GetOwningPlayerController()->GetCharacter());
 		if (Player && CurrentWidget)
 		{
 			if (CurrentWidget->GetWidgetFromName("PickUpText")->IsValidLowLevel())
@@ -72,7 +70,6 @@ void ATheFarm51TestHUD::UpdateTextVisibility(bool Visibility)
 {
 	if (GetOwningPlayerController()->IsLocalPlayerController())
 	{
-//		ATheFarm51TestCharacter* Player = Cast<ATheFarm51TestCharacter>(GetOwningPlayerController()->GetCharacter());
 		if (Player && CurrentWidget)
 		{
 			if (CurrentWidget->GetWidgetFromName("PickUpText")->IsValidLowLevel())
@@ -104,7 +101,6 @@ void ATheFarm51TestHUD::UpdateImageVisibility(bool Visibility)
 {
 	if (GetOwningPlayerController()->IsLocalPlayerController())
 	{
-//		ATheFarm51TestCharacter* Player = Cast<ATheFarm51TestCharacter>(GetOwningPlayerController()->GetCharacter());
 		if (Player && CurrentWidget)
 		{
 			if (CurrentWidget->GetWidgetFromName("ItemImage")->IsValidLowLevel())

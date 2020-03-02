@@ -36,19 +36,17 @@ ATheFarm51TestProjectile::ATheFarm51TestProjectile()
 void ATheFarm51TestProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL))
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		if (OtherComp->IsSimulatingPhysics())
+			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
-		Destroy();
-	}
-
-	if (OtherActor != NULL && OtherActor != this)
-	{
 		if (OtherActor->IsA(ADestructable::StaticClass()))
 		{
 			TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
 			UGameplayStatics::ApplyDamage(OtherActor, 1, GetInstigatorController(), this, ValidDamageTypeClass);
 		}
+
+		Destroy();
 	}
 }

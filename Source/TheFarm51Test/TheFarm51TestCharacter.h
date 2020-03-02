@@ -102,9 +102,6 @@ public:
 		void ClientEquipItem(AInteractable* Item);
 	void ClientEquipItem_Implementation(AInteractable* Item);
 
-//	UPROPERTY(EditAnywhere, Category = Config)
-//		UUserWidget* InfoWidget;
-
 	UPROPERTY()
 		AInteractable* CurrentItem;
 
