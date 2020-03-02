@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{07AECF05-4CF0-5477-B2E4-899AA5C3F17D}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "TheFarm51Test",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
